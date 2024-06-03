@@ -1,10 +1,23 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
+import { fetchApi } from "@/actions/api";
 
-export function middleware(request: NextRequest) {
-  const isAuthenticated = cookies().get("accessToken");
+export async function middleware(request: NextRequest) {
+  const accessToken = cookies().get("accessToken");
 
-  if (isAuthenticated) {
+  if (accessToken?.value) {
+    const profile = await fetchApi("/users/profile", {
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+    });
+
+    console.log(profile);
+
+    if (!profile?.data?.expert) {
+      return NextResponse.redirect(new URL("/choose-profile", request.url));
+    }
+
     return NextResponse.next();
   }
 
@@ -12,5 +25,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/dashboard/:path*",
+  matcher: "/~/:path*",
 };

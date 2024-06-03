@@ -2,48 +2,28 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
-import { z } from "zod";
-import constant from "lodash/constant";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const callThis = (func: Function, ...args: unknown[]) => {
-  return () => {
-    func(...args);
-  };
-};
+import { loginAction } from "@/actions/login";
 
 export function GoogleLogin() {
-  const login = async () => {
-    const googleResponse = await fetch(
-      "https://connzy-api.liara.run/api/oauth/google?link=http://localhost:3000/api/callback"
-    );
-    const authData = await googleResponse.json();
-    const validateAuthData = z
-      .object({
-        data: z.string(),
-      })
-      .parse(authData);
-    console.log({ validateAuthData });
-
-    window.location.replace(validateAuthData.data);
-    return validateAuthData;
-  };
-
   const loginMutation = useMutation({
     mutationKey: ["login"],
-    mutationFn: login,
+    mutationFn: loginAction,
+    onSuccess: (response) => {
+      window.location.replace(response.data);
+    },
   });
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Login</CardTitle>
+        <CardTitle className="text-center">Login</CardTitle>
       </CardHeader>
       <CardContent className="p-5">
         <Button
-          onClick={callThis(loginMutation.mutateAsync)}
+          onClick={() => loginMutation.mutateAsync()}
           disabled={loginMutation.isPending}
         >
           {loginMutation.isPending && (

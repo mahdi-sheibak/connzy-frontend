@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export const GET = (request: NextRequest) => {
   const accessToken = request.nextUrl.searchParams.get("accessToken");
   accessToken && cookies().set("accessToken", accessToken);
 
-  return NextResponse.redirect(new URL("/dashboard", request.url));
+  return NextResponse.redirect(new URL("/~", request.url));
 };
