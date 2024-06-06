@@ -6,9 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { useMutation } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
 import { DevTool } from "@hookform/devtools";
-import { animated } from "@react-spring/web";
+import { motion } from "framer-motion";
 
 import {
   Card,
@@ -33,6 +32,8 @@ import {
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import { uploadImageAction } from "@/actions/upload-image";
+import { ChooseService } from "@/components/choose-service";
+import { USER_TYPE } from "@/enum";
 
 const MotionButton = motion(Button);
 
@@ -42,11 +43,6 @@ const formSchema = z.object({
     .string()
     .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
 });
-
-enum USER_TYPE {
-  CUSTOMER = "CUSTOMER",
-  EXPERT = "EXPERT",
-}
 
 export default function ChooseProfilePage() {
   const [userType, setUserType] = useState<USER_TYPE>(USER_TYPE.CUSTOMER);
@@ -155,7 +151,7 @@ export default function ChooseProfilePage() {
               </FormItem>
             )}
           />
-          {/*  */}
+
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="phone-number">Phone Number</Label>
             <PhoneInput
@@ -167,22 +163,6 @@ export default function ChooseProfilePage() {
               }}
             />
           </div>
-          {/*  */}
-
-          {/* <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem className="flex flex-col items-start">
-                <FormLabel className="text-left">Phone Number</FormLabel>
-                <FormControl className="w-full">
-                  <PhoneInput placeholder="Enter a phone number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-          {/*  */}
 
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="picture">Picture</Label>
@@ -211,43 +191,10 @@ export default function ChooseProfilePage() {
             </label>
           </div>
 
-          <AnimatePresence>
-            {userType === USER_TYPE.EXPERT && (
-              <motion.div
-                initial={{
-                  margin: 0,
-                  display: "grid",
-                  gridTemplateRows: "0fr",
-                  transitionProperty: "margin grid-template-rows",
-                  transitionTimingFunction: "ease-out",
-                  transitionDuration: "0.5s",
-                }}
-                animate={{
-                  margin: "revert-layer",
-                  gridTemplateRows: "1fr",
-                }}
-                exit={{
-                  gridTemplateRows: "0fr",
-                  margin: 0,
-                }}
-                transition={{ duration: 0.5 }}
-              >
-                <div style={{ overflow: "hidden" }}>
-                  <MotionButton
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
-                  >
-                    Choose service
-                  </MotionButton>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <ChooseService userType={userType} />
 
           <div>
-            <Button type="submit">Submit</Button>
+            <MotionButton type="submit">Submit</MotionButton>
           </div>
         </form>
       </Form>

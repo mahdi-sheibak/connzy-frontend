@@ -1,0 +1,35 @@
+        <AnimatePresence>
+          {userType === USER_TYPE.EXPERT && (
+            <motion.div
+              initial={{
+                margin: 0,
+                display: "grid",
+                gridTemplateRows: "0fr",
+                transitionProperty: "margin grid-template-rows",
+                transitionTimingFunction: "ease-out",
+                transitionDuration: "0.5s",
+              }}
+              animate={{
+                margin: "revert-layer",
+                gridTemplateRows: "1fr",
+              }}
+              exit={{
+                gridTemplateRows: "0fr",
+                margin: 0,
+              }}
+              transition={{ duration: 0.5 }}
+            >
+              <div style={{ overflow: "hidden" }}>
+                <MotionButton
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                  type="button"
+                >
+                  Choose service
+                </MotionButton>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
