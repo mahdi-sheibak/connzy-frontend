@@ -1,5 +1,5 @@
 "use client";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, useState, Suspense } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -188,7 +188,9 @@ export default function ChooseProfilePage() {
             </label>
           </div>
 
-          <ChooseServiceDialog userType={userType} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <ChooseServiceDialog userType={userType} />
+          </Suspense>
 
           <div>
             <Button type="submit">Submit</Button>
