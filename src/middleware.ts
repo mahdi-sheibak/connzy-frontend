@@ -1,19 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
-import { fetchApi } from "@/actions/api";
+
+import { getProfile } from "@/actions/profile";
 
 export async function middleware(request: NextRequest) {
   const accessToken = cookies().get("accessToken");
 
   if (accessToken?.value) {
-    const profile = await fetchApi("/users/profile", {
-      headers: {
-        Authorization: `Bearer ${accessToken.value}`,
-      },
-    });
-
-    console.log(profile);
-
+    const profile = await getProfile(accessToken.value);
     if (!profile?.data?.expert) {
       return NextResponse.redirect(new URL("/choose-profile", request.url));
     }
