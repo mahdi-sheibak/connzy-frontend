@@ -7,7 +7,6 @@ import { z } from "zod";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { useMutation } from "@tanstack/react-query";
 import { DevTool } from "@hookform/devtools";
-import { motion } from "framer-motion";
 
 import {
   Card,
@@ -32,10 +31,8 @@ import {
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import { uploadImageAction } from "@/actions/upload-image";
-import { ChooseService } from "@/components/choose-service";
+import { ChooseServiceDialog } from "@/components/dialog/choose-service-dialog";
 import { USER_TYPE } from "@/enum";
-
-const MotionButton = motion(Button);
 
 const formSchema = z.object({
   fullName: z.string().min(1),
@@ -191,10 +188,10 @@ export default function ChooseProfilePage() {
             </label>
           </div>
 
-          <ChooseService userType={userType} />
+          <ChooseServiceDialog userType={userType} />
 
           <div>
-            <MotionButton type="submit">Submit</MotionButton>
+            <Button type="submit">Submit</Button>
           </div>
         </form>
       </Form>
