@@ -56,8 +56,6 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
           onChange={(value) => {
             // @ts-ignore
             onChange?.(value || "");
-
-            console.log("value::", value);
           }}
           {...props}
         />
