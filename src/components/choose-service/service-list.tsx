@@ -3,7 +3,7 @@ import { CheckIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChooseServiceSkeleton } from "@/components/choose-service/skeleton";
-import { getServiceListAction } from "@/actions/export-service";
+import { getServiceListAction } from "@/actions/service.action";
 import { cn } from "@/lib/utils";
 import { Service } from "@/types";
 
@@ -24,7 +24,7 @@ export function ServiceList({
   });
 
   return (
-    <div className="grid gap-4 py-4 h-full">
+    <div className="grid gap-4 h-full">
       <h2>Choose your Service</h2>
       <ScrollArea className="h-[45vh]">
         {isLoading && <ChooseServiceSkeleton />}

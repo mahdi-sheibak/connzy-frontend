@@ -1,6 +1,13 @@
 "use server";
-import { config } from "@/config";
 import { cookies } from "next/headers";
+import { z } from "zod";
+import { config } from "@/config";
+
+const UploadImageResponseSchema = z.object({
+  data: z.object({
+    _id: z.string(),
+  }),
+});
 
 export const uploadImageAction = async (formData: FormData) => {
   const accessToken = cookies().get("accessToken");
@@ -15,6 +22,7 @@ export const uploadImageAction = async (formData: FormData) => {
       },
     }
   );
+
   const uploadImage = await uploadImageResponse.json();
-  return uploadImage;
+  return UploadImageResponseSchema.parse(uploadImage);
 };

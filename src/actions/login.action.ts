@@ -8,13 +8,11 @@ export const loginAction = async () => {
     `${config.apiBaseUrl}/oauth/google?link=${config.appUrl}/api/callback`
   );
   const authData = await authDataResponse.json();
-
   const validateAuthData = z
     .object({
       data: z.string(),
     })
     .parse(authData);
-  console.log({ validateAuthData });
 
   return validateAuthData;
 };

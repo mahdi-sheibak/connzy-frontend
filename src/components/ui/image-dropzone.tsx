@@ -64,6 +64,7 @@ export const ImageDropzone = ({
             size="sm"
             className="ml-auto flex h-8 space-x-2 px-0 pl-1 text-xs"
             onClick={handleButtonClick}
+            type="button"
           >
             Click Here
           </Button>

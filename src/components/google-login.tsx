@@ -5,7 +5,7 @@ import { Loader2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { loginAction } from "@/actions/login";
+import { loginAction } from "@/actions/login.action";
 
 export function GoogleLogin() {
   const loginMutation = useMutation({
