@@ -17,8 +17,12 @@ export function ChooseProfileType({
   userType,
   onChange,
 }: ChooseProfileTypeProps) {
-  const onSelectCustomerType = () => onChange(USER_TYPE.CUSTOMER);
-  const onSelectExpertType = () => onChange(USER_TYPE.EXPERT);
+  const onSelectCustomerType = () => {
+    onChange(USER_TYPE.CUSTOMER);
+  };
+  const onSelectExpertType = () => {
+    onChange(USER_TYPE.EXPERT);
+  };
 
   useHotkeys("c", onSelectCustomerType);
   useHotkeys("e", onSelectExpertType);
@@ -31,7 +35,7 @@ export function ChooseProfileType({
           "sm:w-[350px] w-[90%] cursor-pointer hover:bg-slate-900 mt-2 mx-2",
           {
             "bg-slate-900": userType === USER_TYPE.CUSTOMER,
-          }
+          },
         )}
       >
         <CardHeader>
@@ -51,7 +55,7 @@ export function ChooseProfileType({
           "sm:w-[350px] w-[90%] cursor-pointer hover:bg-slate-900 mt-2 mx-2",
           {
             "bg-slate-900": userType === USER_TYPE.EXPERT,
-          }
+          },
         )}
       >
         <CardHeader>

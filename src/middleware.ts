@@ -7,15 +7,19 @@ export async function middleware(request: NextRequest) {
   const accessToken = cookies().get("accessToken");
 
   if (accessToken?.value) {
-    const profile = await getProfile(accessToken.value);
+    try {
+      const profile = await getProfile(accessToken.value);
 
-    const shouldChooseProfile = Boolean(
-      !profile?.data?.profile && request.nextUrl.pathname !== "/choose-profile"
-    );
+      const shouldChooseProfile = Boolean(
+        !profile.data.profile && request.nextUrl.pathname !== "/choose-profile"
+      );
 
-    return shouldChooseProfile
-      ? NextResponse.redirect(new URL("/choose-profile", request.url))
-      : NextResponse.next();
+      return shouldChooseProfile
+        ? NextResponse.redirect(new URL("/choose-profile", request.url))
+        : NextResponse.next();
+    } catch (e) {
+      return NextResponse.redirect(new URL("/api/auth/logout", request.url));
+    }
   }
 
   return NextResponse.redirect(new URL("/", request.url));

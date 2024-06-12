@@ -12,7 +12,9 @@ export default function ChooseProfilePage() {
     <section className="flex flex-col gap-5 px-3 items-center">
       <ChooseProfileType
         userType={userType}
-        onChange={(newUserType) => setUserType(newUserType)}
+        onChange={(newUserType) => {
+          setUserType(newUserType);
+        }}
       />
 
       <ChooseProfileForm userType={userType} />

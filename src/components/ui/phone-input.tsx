@@ -26,19 +26,21 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
+const RPNInputDefault = RPNInput.default;
+
 type PhoneInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "onChange" | "value"
 > &
   Omit<RPNInput.Props<typeof RPNInput.default>, "onChange"> & {
-    onChange?: (value: RPNInput.Value) => void;
+    onChange?: (value: RPNInput.Value | string) => void;
   };
 
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
   React.forwardRef<React.ElementRef<typeof RPNInput.default>, PhoneInputProps>(
-    ({ className, onChange, onCountryChange, ...props }, ref) => {
+    ({ className, onChange, ...props }, ref) => {
       return (
-        <RPNInput.default
+        <RPNInputDefault
           ref={ref}
           className={cn("flex", className)}
           flagComponent={FlagComponent}
@@ -54,13 +56,12 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
            * @param {E164Number | undefined} value - The entered value
            */
           onChange={(value) => {
-            // @ts-ignore
-            onChange?.(value || "");
+            onChange?.(value ?? "");
           }}
           {...props}
         />
       );
-    }
+    },
   );
 PhoneInput.displayName = "PhoneInput";
 
@@ -71,18 +72,21 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
       {...props}
       ref={ref}
     />
-  )
+  ),
 );
 InputComponent.displayName = "InputComponent";
 
-type CountrySelectOption = { label: string; value: RPNInput.Country };
+interface CountrySelectOption {
+  label: string;
+  value: RPNInput.Country;
+}
 
-type CountrySelectProps = {
+interface CountrySelectProps {
   disabled?: boolean;
   value: RPNInput.Country;
   onChange: (value: RPNInput.Country) => void;
   options: CountrySelectOption[];
-};
+}
 
 const CountrySelect = ({
   disabled,
@@ -94,7 +98,7 @@ const CountrySelect = ({
     (country: RPNInput.Country) => {
       onChange(country);
     },
-    [onChange]
+    [onChange],
   );
 
   return (
@@ -110,7 +114,7 @@ const CountrySelect = ({
           <ChevronsUpDown
             className={cn(
               "-mr-2 h-4 w-4 opacity-50",
-              disabled ? "hidden" : "opacity-100"
+              disabled ? "hidden" : "opacity-100",
             )}
           />
         </Button>
@@ -123,19 +127,21 @@ const CountrySelect = ({
               <CommandEmpty>No country found.</CommandEmpty>
               <CommandGroup>
                 {options
-                  .filter((x) => x.value)
+                  .filter((x) => Boolean(x.value))
                   .map((option) => (
                     <CommandItem
                       className="gap-2"
                       key={option.value}
-                      onSelect={() => handleSelect(option.value)}
+                      onSelect={() => {
+                        handleSelect(option.value);
+                      }}
                     >
                       <FlagComponent
                         country={option.value}
                         countryName={option.label}
                       />
                       <span className="flex-1 text-sm">{option.label}</span>
-                      {option.value && (
+                      {Boolean(option.value) && (
                         <span className="text-sm text-foreground/50">
                           {`+${RPNInput.getCountryCallingCode(option.value)}`}
                         </span>
@@ -143,7 +149,7 @@ const CountrySelect = ({
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",
-                          option.value === value ? "opacity-100" : "opacity-0"
+                          option.value === value ? "opacity-100" : "opacity-0",
                         )}
                       />
                     </CommandItem>

@@ -5,14 +5,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChooseServiceSkeleton } from "@/components/choose-service/skeleton";
 import { getSubCategoryListAction } from "@/actions/sub-category.action";
-import { SubCategory } from "@/types";
 
 export function SubCategoryList({ category }: { category: string }) {
-  const [_, setSubCategory] = useQueryState("sub-category");
+  const [, setSubCategory] = useQueryState("sub-category");
 
-  const { data: subCategoryList, isLoading } = useQuery<{
-    data: SubCategory[];
-  }>({
+  const { data: subCategoryList, isLoading } = useQuery({
     queryKey: ["sub-category", "list", category],
     queryFn: () => getSubCategoryListAction(category),
   });
@@ -22,10 +19,10 @@ export function SubCategoryList({ category }: { category: string }) {
       <h2>Choose your Sub Category</h2>
       <ScrollArea className="h-[45vh]">
         {isLoading && <ChooseServiceSkeleton />}
-        {Boolean(!isLoading && !subCategoryList?.data?.length) && (
+        {Boolean(!isLoading && !subCategoryList?.data.length) && (
           <h1 className="text-center">without any sub category</h1>
         )}
-        {subCategoryList?.data?.map((subCategory) => (
+        {subCategoryList?.data.map((subCategory) => (
           <Button
             key={subCategory._id}
             variant="secondary"

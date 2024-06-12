@@ -19,7 +19,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ImageDropzone } from "@/components/ui/image-dropzone";
+import { useToast } from "@/components/ui/use-toast";
+import { Dropzone } from "@/components/ui/dropzone";
 import { ChooseServiceDialog } from "@/components/choose-service/dialog";
 import { uploadImageAction } from "@/actions/upload-image.action";
 import {
@@ -32,6 +33,8 @@ import {
   createCustomerProfile,
   createExpertProfile,
 } from "@/actions/user.action";
+import { formatBytes } from "@/utils/format-bytes";
+import { safeBoolean } from "@/utils/safe-boolean";
 
 const formSchema = z.object({
   fullName: z.string().min(1),
@@ -40,16 +43,17 @@ const formSchema = z.object({
     .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
   image: z
     .instanceof(File, { message: "Please choose a file" })
-    .refine((file) => Number(file?.size) <= MAX_FILE_SIZE, {
+    .refine((file) => Number(file.size) <= MAX_FILE_SIZE, {
       message: "Max image size is 5MB.",
     })
-    .refine((file) => ACCEPTED_IMAGE_MIME_TYPES.includes(String(file?.type)), {
+    .refine((file) => ACCEPTED_IMAGE_MIME_TYPES.includes(String(file.type)), {
       message: `Only ${ACCEPTED_IMAGE_TYPES.join(" .")} formats are supported.`,
     }),
   bio: z.string().min(1),
-  acceptTerms: z.boolean().refine((value) => value === true, {
+  acceptTerms: z.boolean().refine((value) => value, {
     message: "Please read and accept the terms and conditions",
   }),
+  services: z.array(z.string()).min(1),
 });
 
 interface ChooseProfileFormProps {
@@ -77,20 +81,23 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
       image: undefined,
       bio: "",
       acceptTerms: false,
+      services: [],
     },
   });
+
+  const { toast } = useToast();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const phone = parsePhoneNumber(values.phoneNumber);
 
     const imageFormData = new FormData();
     imageFormData.append("image", values.image);
-    const uploadedImageInfo = await uploadImageMutation.mutateAsync(
-      imageFormData
-    );
+    const uploadedImageInfo =
+      await uploadImageMutation.mutateAsync(imageFormData);
 
     console.log({
       ...values,
+      f: values.services,
       uploadedImageInfo: uploadedImageInfo,
       phone,
     });
@@ -109,16 +116,17 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
         })
       );
 
-    if (userType === USER_TYPE.CUSTOMER) {
-      const customer = await createCustomerProfileMutation.mutateAsync(
-        userFormData
-      );
-      console.log({ customer });
-    } else {
-      const expert = await createExpertProfileMutation.mutateAsync(
-        userFormData
-      );
-      console.log({ expert });
+    const userPromise =
+      userType === USER_TYPE.CUSTOMER
+        ? createCustomerProfileMutation.mutateAsync(userFormData)
+        : createExpertProfileMutation.mutateAsync(userFormData);
+
+    const user = await userPromise;
+
+    if (user.errors.length) {
+      toast({
+        title: user.errors[0].message,
+      });
     }
   };
 
@@ -159,20 +167,24 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
         <FormField
           control={form.control}
           name="image"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Picture</FormLabel>
               <FormControl>
-                <ImageDropzone
-                  {...omit(field, "value", "ref")}
+                <Dropzone
+                  accept={ACCEPTED_IMAGE_MIME_TYPES.join(",")}
                   onChange={(files) => {
                     field.onChange(files?.item(0));
                   }}
-                  {...(Boolean(field.value?.name) && {
-                    fileInfo: `Uploaded file: ${
-                      field.value?.name
-                    } (${Math.round(Number(field?.value?.size) / 1024)} KB)`,
-                  })}
+                  message={
+                    safeBoolean(field.value)
+                      ? `Uploaded file: ${field.value.name} (${formatBytes(
+                          field.value.size
+                        )})`
+                      : ""
+                  }
+                  className={fieldState.error ? "border-destructive" : ""}
+                  {...omit(field, "value", "onChange")}
                 />
               </FormControl>
               <FormMessage />
@@ -224,9 +236,26 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
           )}
         />
 
-        <Suspense fallback={null}>
-          <ChooseServiceDialog userType={userType} />
-        </Suspense>
+        <FormField
+          control={form.control}
+          name="services"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Suspense fallback={null}>
+                  <ChooseServiceDialog
+                    userType={userType}
+                    onChange={(selectedServices) => {
+                      console.log("selectedServices::", selectedServices);
+                      field.onChange(selectedServices);
+                    }}
+                  />
+                </Suspense>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div>
           <Button type="submit" disabled={form.formState.isSubmitting}>

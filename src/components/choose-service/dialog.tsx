@@ -13,19 +13,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { USER_TYPE } from "@/enum";
-import { ChooseView } from "@/components/choose-service/choose-view";
 import { Badge } from "@/components/ui/badge";
+import { ChooseView } from "@/components/choose-service/choose-view";
 import { getServiceListByIdsAction } from "@/actions/service.action";
+import { USER_TYPE } from "@/enum";
 
 const MotionButton = motion(Button);
-const MotionBadge = motion(Badge);
 
 interface ChooseServiceDialogProps {
   userType: USER_TYPE;
+  onChange: (selectedServices: string[]) => void;
 }
 
-export function ChooseServiceDialog({ userType }: ChooseServiceDialogProps) {
+export function ChooseServiceDialog({
+  userType,
+  onChange,
+}: ChooseServiceDialogProps) {
   const [open, setOpen] = useState(false);
 
   const [selectedServices, setSelectedServices] = useState<Set<string>>(
@@ -51,35 +54,41 @@ export function ChooseServiceDialog({ userType }: ChooseServiceDialogProps) {
       ? selectedServices.delete(serviceId)
       : selectedServices.add(serviceId);
     setSelectedServices(new Set(selectedServices));
+    onChange([...selectedServices]);
   };
 
   const handleBack = () => {
     if (subCategory) return setSubCategory(null);
     if (category) return setCategory(null);
-    return setOpen(false);
+    setOpen(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log({ selectedServices });
     setOpen(false);
-    setCategory(null);
-    setSubCategory(null);
+    await setCategory(null);
+    await setSubCategory(null);
   };
 
   return (
     <Dialog
       open={open}
-      onOpenChange={(newOpenState) => {
-        if (newOpenState === false) {
+      onOpenChange={async (newOpenState) => {
+        if (!newOpenState) {
           setOpen(false);
-          setCategory(null);
-          setSubCategory(null);
+          await setCategory(null);
+          await setSubCategory(null);
         }
       }}
     >
       <AnimatePresence>
         {userType === USER_TYPE.EXPERT && (
-          <DialogTrigger asChild onClick={() => setOpen(true)}>
+          <DialogTrigger
+            asChild
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
             <MotionButton
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -106,7 +115,7 @@ export function ChooseServiceDialog({ userType }: ChooseServiceDialogProps) {
           {Boolean(selectedServices.size) && (
             <div className="pt-2 flex flex-wrap">
               <AnimatePresence>
-                {selectedServicesData?.data?.map((serviceData) => (
+                {selectedServicesData?.data.map((serviceData) => (
                   <motion.span
                     className="mx-1"
                     key={serviceData._id}

@@ -1,18 +1,16 @@
 "use server";
+import { redirect } from "next/navigation";
 
 import { config } from "@/config";
-import { z } from "zod";
+import { GoogleLoginSchema } from "@/schema";
 
 export const loginAction = async () => {
   const authDataResponse = await fetch(
     `${config.apiBaseUrl}/oauth/google?link=${config.appUrl}/api/callback`
   );
-  const authData = await authDataResponse.json();
-  const validateAuthData = z
-    .object({
-      data: z.string(),
-    })
-    .parse(authData);
+  const validateAuthData = GoogleLoginSchema.parse(
+    await authDataResponse.json()
+  );
 
-  return validateAuthData;
+  redirect(validateAuthData.data);
 };

@@ -18,11 +18,13 @@ export const uploadImageAction = async (formData: FormData) => {
       method: "POST",
       body: formData,
       headers: {
-        Authorization: `Bearer ${accessToken?.value}`,
+        Authorization: accessToken?.value ? `Bearer ${accessToken.value}` : "",
       },
-    }
+    },
   );
 
-  const uploadImage = await uploadImageResponse.json();
-  return UploadImageResponseSchema.parse(uploadImage);
+  const uploadImage = UploadImageResponseSchema.parse(
+    await uploadImageResponse.json(),
+  );
+  return uploadImage;
 };
