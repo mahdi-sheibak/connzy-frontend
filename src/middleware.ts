@@ -10,6 +10,8 @@ export async function middleware(request: NextRequest) {
     try {
       const profile = await getProfile(accessToken.value);
 
+      console.log({ profile });
+
       const shouldChooseProfile = Boolean(
         !profile.data.profile && request.nextUrl.pathname !== "/choose-profile"
       );

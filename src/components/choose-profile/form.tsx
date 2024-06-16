@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { Dropzone } from "@/components/ui/dropzone";
-import { ChooseServiceDialog } from "@/components/choose-service/dialog";
 import { uploadImageAction } from "@/actions/upload-image.action";
 import {
   ACCEPTED_IMAGE_MIME_TYPES,
@@ -35,6 +33,8 @@ import {
 } from "@/actions/user.action";
 import { formatBytes } from "@/utils/format-bytes";
 import { safeBoolean } from "@/utils/safe-boolean";
+import { useRouter } from "next/navigation";
+// import { FancyMultiSelect } from "@/components/fancy-multi-select";
 
 const formSchema = z.object({
   fullName: z.string().min(1),
@@ -53,12 +53,47 @@ const formSchema = z.object({
   acceptTerms: z.boolean().refine((value) => value, {
     message: "Please read and accept the terms and conditions",
   }),
-  services: z.array(z.string()).min(1),
+  // services: z.array(z.string()).min(1),
 });
 
 interface ChooseProfileFormProps {
   userType: USER_TYPE;
 }
+
+// const FRAMEWORKS = [
+//   {
+//     value: "5f72d4a912007e8a468f2d3d",
+//     label: "2D Animation",
+//   },
+//   {
+//     value: "5f72d4a912007e8a468f2d3e",
+//     label: "3D Animation",
+//   },
+//   {
+//     value: "5f72d4a912007e8a468f2d04",
+//     label: "Acrylic Painting Classes",
+//   },
+//   {
+//     value: "5f72d4a912007e8a468f2d10",
+//     label: "Acting Classes",
+//   },
+//   {
+//     value: "5f72d4a912007e8a468f2b32",
+//     label: "Adult Literacy Programs",
+//   },
+//   {
+//     value: "5f72d4a912007e8a468f2de8",
+//     label: "Advertising Services",
+//   },
+//   {
+//     value: "5f72d4a912007e8a468f2dc0",
+//     label: "Alarm System Installation",
+//   },
+//   {
+//     value: "5f72d4a912007e8a468f2e15",
+//     label: "Android App Development",
+//   },
+// ];
 
 export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
   const uploadImageMutation = useMutation({
@@ -81,11 +116,12 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
       image: undefined,
       bio: "",
       acceptTerms: false,
-      services: [],
+      // services: [],
     },
   });
 
   const { toast } = useToast();
+  const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const phone = parsePhoneNumber(values.phoneNumber);
@@ -95,12 +131,12 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
     const uploadedImageInfo =
       await uploadImageMutation.mutateAsync(imageFormData);
 
-    console.log({
-      ...values,
-      f: values.services,
-      uploadedImageInfo: uploadedImageInfo,
-      phone,
-    });
+    // console.log({
+    //   ...values,
+    //   // f: values.services,
+    //   uploadedImageInfo: uploadedImageInfo,
+    //   phone,
+    // });
 
     const userFormData = new FormData();
     userFormData.append("fullName", values.fullName);
@@ -128,6 +164,10 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
         title: user.errors[0].message,
       });
     }
+    if (userType === USER_TYPE.CUSTOMER) {
+      router.push("/~/customer");
+    }
+    console.log({ user });
   };
 
   return (
@@ -206,6 +246,32 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
           )}
         />
 
+        {/* {userType === USER_TYPE.EXPERT && (
+          <FormField
+            control={form.control}
+            name="services"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select Service</FormLabel>
+                <FormControl>
+                  <FancyMultiSelect
+                    options={FRAMEWORKS}
+                    onChange={(options) => {
+                      field.onChange(options.map((option) => option.value));
+                      console.log("im changed", options);
+                    }}
+                    selectedOptions={FRAMEWORKS.filter((option) =>
+                      field.value.includes(option.value)
+                    )}
+                    placeholder="Select Service..."
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )} */}
+
         <FormField
           control={form.control}
           name="acceptTerms"
@@ -231,27 +297,6 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
                   </a>
                 </FormLabel>
               </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="services"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Suspense fallback={null}>
-                  <ChooseServiceDialog
-                    userType={userType}
-                    onChange={(selectedServices) => {
-                      console.log("selectedServices::", selectedServices);
-                      field.onChange(selectedServices);
-                    }}
-                  />
-                </Suspense>
-              </FormControl>
               <FormMessage />
             </FormItem>
           )}

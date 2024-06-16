@@ -8,7 +8,7 @@ const ResponseSchema = z.object({
     email: z.string(),
     fullName: z.string().nullable(),
     expert: z.string().nullable(),
-    profile: z.any().nullable(),
+    profile: z.enum(["customer", "expert"]).nullable(),
   }),
 });
 

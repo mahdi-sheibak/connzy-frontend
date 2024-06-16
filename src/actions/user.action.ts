@@ -26,7 +26,7 @@ export async function createCustomerProfile(userInfo: FormData) {
   const customerProfileResponse = await fetch(
     `${config.apiBaseUrl}/customers/profile`,
     {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({
         customer: {
           ...data,
