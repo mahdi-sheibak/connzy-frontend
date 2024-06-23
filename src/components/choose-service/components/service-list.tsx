@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { CheckIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChooseServiceSkeleton } from "@/components/choose-service/skeleton";
+import { Skeleton } from "@/components/choose-service/components/skeleton";
 import { getServiceListAction } from "@/actions/service.action";
 import { cn } from "@/lib/utils";
 
-interface ServiceListProps {
+interface Props {
   subCategory: string;
   selectedServices: Set<string>;
   onChooseService: (serviceId: string) => void;
@@ -16,7 +16,7 @@ export function ServiceList({
   subCategory,
   selectedServices,
   onChooseService,
-}: ServiceListProps) {
+}: Readonly<Props>) {
   const { data: serviceList, isLoading } = useQuery({
     queryKey: ["service", "list", subCategory],
     queryFn: () => getServiceListAction(subCategory),
@@ -26,7 +26,7 @@ export function ServiceList({
     <div className="grid gap-4 h-full">
       <h2>Choose your Service</h2>
       <ScrollArea className="h-[45vh]">
-        {isLoading && <ChooseServiceSkeleton />}
+        {isLoading && <Skeleton />}
         {Boolean(!isLoading && !serviceList?.data.length) && (
           <h1 className="text-center">without any service</h1>
         )}

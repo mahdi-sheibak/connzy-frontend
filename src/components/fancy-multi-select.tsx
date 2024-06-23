@@ -1,8 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { X } from "lucide-react";
+// https://craft.mxkaske.dev/post/fancy-multi-select
 
+import * as React from "react";
+import { Loader2Icon, X } from "lucide-react";
+import { Command as CommandPrimitive } from "cmdk";
 import { Badge } from "@/components/ui/badge";
 import {
   Command,
@@ -10,15 +12,16 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Command as CommandPrimitive } from "cmdk";
 
-type Option = Record<"value" | "label", string>;
+export type Option = Record<"value" | "label", string>;
 
 interface Props {
   options: Option[];
   selectedOptions: Option[];
   onChange: (options: Option[]) => void;
   placeholder?: string;
+  onInputValueChange?: (value: string) => void;
+  isLoading?: boolean;
 }
 
 export function FancyMultiSelect({
@@ -26,7 +29,9 @@ export function FancyMultiSelect({
   selectedOptions,
   onChange,
   placeholder,
-}: Props) {
+  onInputValueChange,
+  isLoading,
+}: Readonly<Props>) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
@@ -65,14 +70,12 @@ export function FancyMultiSelect({
     (option) => !selectedOptions.includes(option)
   );
 
-  console.log(selectables, selectedOptions, inputValue);
-
   return (
     <Command
       onKeyDown={handleKeyDown}
       className="overflow-visible bg-transparent"
     >
-      <div className="group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className="relative group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex flex-wrap gap-1">
           {selectedOptions.map((option) => {
             return (
@@ -102,7 +105,10 @@ export function FancyMultiSelect({
           <CommandPrimitive.Input
             ref={inputRef}
             value={inputValue}
-            onValueChange={setInputValue}
+            onValueChange={(value) => {
+              setInputValue(value);
+              onInputValueChange && onInputValueChange(value);
+            }}
             onBlur={() => {
               setOpen(false);
             }}
@@ -113,6 +119,10 @@ export function FancyMultiSelect({
             className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           />
         </div>
+
+        {isLoading && (
+          <Loader2Icon className="absolute right-1 top-2 h-5 w-5 animate-spin" />
+        )}
       </div>
       <div className="relative mt-2">
         <CommandList>
@@ -129,6 +139,7 @@ export function FancyMultiSelect({
                       }}
                       onSelect={() => {
                         setInputValue("");
+                        onInputValueChange && onInputValueChange("");
                         onChange([...selectedOptions, option]);
                       }}
                       className={"cursor-pointer"}

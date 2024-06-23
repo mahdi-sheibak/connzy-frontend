@@ -2,19 +2,19 @@ import { CategoryList } from "./category-list";
 import { SubCategoryList } from "./sub-category-list";
 import { ServiceList } from "./service-list";
 
-interface ChooseViewProps {
+interface Props {
   subCategory: string | null;
   category: string | null;
   onChooseService: (serviceId: string) => void;
   selectedServices: Set<string>;
 }
 
-export function ChooseView({
+export function SelectableServiceList({
   subCategory,
   category,
   onChooseService,
   selectedServices,
-}: ChooseViewProps) {
+}: Readonly<Props>) {
   if (subCategory)
     return (
       <ServiceList

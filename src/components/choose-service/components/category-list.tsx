@@ -3,7 +3,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChooseServiceSkeleton } from "@/components/choose-service/skeleton";
+import { Skeleton } from "@/components/choose-service/components/skeleton";
 import { getCategoryListAction } from "@/actions/category.action";
 
 export function CategoryList() {
@@ -18,7 +18,7 @@ export function CategoryList() {
     <div className="grid gap-4 h-full">
       <h2>Choose your Category</h2>
       <ScrollArea className="h-[45vh]">
-        {isLoading && <ChooseServiceSkeleton />}
+        {isLoading && <Skeleton />}
         {categoryList?.data.map((category) => (
           <Button
             key={category._id}

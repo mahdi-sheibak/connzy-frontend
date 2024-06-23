@@ -34,7 +34,7 @@ import {
 import { formatBytes } from "@/utils/format-bytes";
 import { safeBoolean } from "@/utils/safe-boolean";
 import { useRouter } from "next/navigation";
-// import { FancyMultiSelect } from "@/components/fancy-multi-select";
+import { ServiceMultiAsyncSelect } from "@/components/service-multi-async-select";
 
 const formSchema = z.object({
   fullName: z.string().min(1),
@@ -53,49 +53,16 @@ const formSchema = z.object({
   acceptTerms: z.boolean().refine((value) => value, {
     message: "Please read and accept the terms and conditions",
   }),
-  // services: z.array(z.string()).min(1),
+  services: z.array(z.string()).min(1),
 });
 
 interface ChooseProfileFormProps {
   userType: USER_TYPE;
 }
 
-// const FRAMEWORKS = [
-//   {
-//     value: "5f72d4a912007e8a468f2d3d",
-//     label: "2D Animation",
-//   },
-//   {
-//     value: "5f72d4a912007e8a468f2d3e",
-//     label: "3D Animation",
-//   },
-//   {
-//     value: "5f72d4a912007e8a468f2d04",
-//     label: "Acrylic Painting Classes",
-//   },
-//   {
-//     value: "5f72d4a912007e8a468f2d10",
-//     label: "Acting Classes",
-//   },
-//   {
-//     value: "5f72d4a912007e8a468f2b32",
-//     label: "Adult Literacy Programs",
-//   },
-//   {
-//     value: "5f72d4a912007e8a468f2de8",
-//     label: "Advertising Services",
-//   },
-//   {
-//     value: "5f72d4a912007e8a468f2dc0",
-//     label: "Alarm System Installation",
-//   },
-//   {
-//     value: "5f72d4a912007e8a468f2e15",
-//     label: "Android App Development",
-//   },
-// ];
-
-export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
+export function ChooseProfileForm({
+  userType,
+}: Readonly<ChooseProfileFormProps>) {
   const uploadImageMutation = useMutation({
     mutationFn: uploadImageAction,
   });
@@ -130,13 +97,6 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
     imageFormData.append("image", values.image);
     const uploadedImageInfo =
       await uploadImageMutation.mutateAsync(imageFormData);
-
-    // console.log({
-    //   ...values,
-    //   // f: values.services,
-    //   uploadedImageInfo: uploadedImageInfo,
-    //   phone,
-    // });
 
     const userFormData = new FormData();
     userFormData.append("fullName", values.fullName);
@@ -246,7 +206,7 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
           )}
         />
 
-        {/* {userType === USER_TYPE.EXPERT && (
+        {userType === USER_TYPE.EXPERT && (
           <FormField
             control={form.control}
             name="services"
@@ -254,23 +214,17 @@ export function ChooseProfileForm({ userType }: ChooseProfileFormProps) {
               <FormItem>
                 <FormLabel>Select Service</FormLabel>
                 <FormControl>
-                  <FancyMultiSelect
-                    options={FRAMEWORKS}
+                  <ServiceMultiAsyncSelect
                     onChange={(options) => {
                       field.onChange(options.map((option) => option.value));
-                      console.log("im changed", options);
                     }}
-                    selectedOptions={FRAMEWORKS.filter((option) =>
-                      field.value.includes(option.value)
-                    )}
-                    placeholder="Select Service..."
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        )} */}
+        )}
 
         <FormField
           control={form.control}

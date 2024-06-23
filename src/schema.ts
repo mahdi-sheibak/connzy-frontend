@@ -2,7 +2,7 @@ import { ZodSchema, z } from "zod";
 
 export const ResponseSchema = <T>(schema: ZodSchema<T>) =>
   z.object({
-    data: z.array(schema),
+    data: schema,
   });
 
 export const CategorySchema = z.object({

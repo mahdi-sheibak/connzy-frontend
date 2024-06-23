@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQueryState } from "nuqs";
@@ -14,21 +16,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { ChooseView } from "@/components/choose-service/choose-view";
+import { SelectableServiceList } from "@/components/choose-service/components/selectable-service-list";
 import { getServiceListByIdsAction } from "@/actions/service.action";
-import { USER_TYPE } from "@/enum";
 
-const MotionButton = motion(Button);
-
-interface ChooseServiceDialogProps {
-  userType: USER_TYPE;
+interface Props {
+  title: string;
+  description: string;
+  trigger: React.ReactNode;
+  footer: React.ReactNode;
+  length: number;
   onChange: (selectedServices: string[]) => void;
 }
 
-export function ChooseServiceDialog({
-  userType,
+export function ChooseService({
+  title,
+  description,
+  trigger,
   onChange,
-}: ChooseServiceDialogProps) {
+  footer,
+  length,
+}: Readonly<Props>) {
   const [open, setOpen] = useState(false);
 
   const [selectedServices, setSelectedServices] = useState<Set<string>>(
@@ -49,25 +56,30 @@ export function ChooseServiceDialog({
   const [category, setCategory] = useQueryState("category");
   const [subCategory, setSubCategory] = useQueryState("sub-category");
 
-  const onChooseService = (serviceId: string) => {
-    selectedServices.has(serviceId)
-      ? selectedServices.delete(serviceId)
-      : selectedServices.add(serviceId);
-    setSelectedServices(new Set(selectedServices));
-    onChange([...selectedServices]);
-  };
-
   const handleBack = () => {
     if (subCategory) return setSubCategory(null);
     if (category) return setCategory(null);
     setOpen(false);
   };
 
-  const handleSubmit = async () => {
-    console.log({ selectedServices });
+  const closeDialog = async () => {
     setOpen(false);
     await setCategory(null);
     await setSubCategory(null);
+  };
+
+  const handleSubmit = async () => {
+    await closeDialog();
+  };
+
+  const onChooseService = async (serviceId: string) => {
+    selectedServices.has(serviceId)
+      ? selectedServices.delete(serviceId)
+      : selectedServices.add(serviceId);
+    setSelectedServices(new Set(selectedServices));
+    const selectedServicesList = [...selectedServices];
+    onChange(selectedServicesList);
+    selectedServicesList.length === length && (await closeDialog());
   };
 
   return (
@@ -75,39 +87,28 @@ export function ChooseServiceDialog({
       open={open}
       onOpenChange={async (newOpenState) => {
         if (!newOpenState) {
-          setOpen(false);
-          await setCategory(null);
-          await setSubCategory(null);
+          await closeDialog();
         }
+        setSelectedServices(new Set());
       }}
     >
-      <AnimatePresence>
-        {userType === USER_TYPE.EXPERT && (
-          <DialogTrigger
-            asChild
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            <MotionButton
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0, transition: { type: "tween" } }}
-              transition={{ type: "spring" }}
-              type="button"
-              variant="secondary"
-            >
-              Choose service
-            </MotionButton>
-          </DialogTrigger>
-        )}
-      </AnimatePresence>
+      <DialogTrigger
+        asChild
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        {trigger}
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Choose Service</DialogTitle>
-          <DialogDescription>Choose your services</DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
           <div>
-            <Button className={"flex items-center group"} onClick={handleBack}>
+            <Button
+              className={"flex items-center group mt-1"}
+              onClick={handleBack}
+            >
               <ChevronLeftIcon className="w-0 opacity-0 group-hover:w-auto group-hover:opacity-100 group-hover:mr-1 transition-all" />
               <span>Back</span>
             </Button>
@@ -135,16 +136,18 @@ export function ChooseServiceDialog({
             </div>
           )}
         </DialogHeader>
-        <ChooseView
+        <SelectableServiceList
           subCategory={subCategory}
           category={category}
           onChooseService={onChooseService}
           selectedServices={selectedServices}
         />
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>
-            Submit
-          </Button>
+          {footer ?? (
+            <Button type="submit" onClick={handleSubmit}>
+              Choose
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
