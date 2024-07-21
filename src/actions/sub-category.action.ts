@@ -1,6 +1,6 @@
 "use server";
 import { config } from "@/config";
-import { ResponseSchema, SubCategorySchema, SubCategory } from "@/schema";
+import { ResponseSchema, SubCategorySchema, type SubCategory } from "@/schema";
 import { z } from "zod";
 
 export const getSubCategoryListAction = async (categoryId: string) => {

@@ -1,4 +1,4 @@
-import { ZodSchema, z } from "zod";
+import { type ZodSchema, z } from "zod";
 
 export const ResponseSchema = <T>(schema: ZodSchema<T>) =>
   z.object({
@@ -18,11 +18,43 @@ export const SubCategorySchema = z.object({
 });
 export type SubCategory = z.infer<typeof SubCategorySchema>;
 
+export const ServiceStepSchema = z.object({
+  label: z.string(),
+  options: z.array(
+    z
+      .object({
+        label: z.string(),
+        value: z.string(),
+      })
+      .optional()
+  ),
+  placeholder: z.string(),
+  type: z.enum([
+    "text",
+    "email",
+    "city",
+    "province",
+    "district",
+    "checkbox",
+    "number",
+    "textarea",
+    "radio",
+  ]),
+  validationRules: z.object({
+    required: z.boolean().optional(),
+    min: z.number().optional(),
+    max: z.number().optional(),
+  }),
+  _id: z.string(),
+});
+
+export const StepsSchema = z.array(z.array(ServiceStepSchema)).optional();
+
 export const ServiceSchema = z.object({
   name: z.string(),
   _id: z.string(),
   subCategory: SubCategorySchema,
-  steps: z.array(z.unknown()),
+  steps: StepsSchema,
 });
 export type Service = z.infer<typeof ServiceSchema>;
 

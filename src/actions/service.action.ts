@@ -1,6 +1,6 @@
 "use server";
 import { config } from "@/config";
-import { ServiceSchema, ResponseSchema, Service } from "@/schema";
+import { ServiceSchema, ResponseSchema, type Service } from "@/schema";
 import { z } from "zod";
 
 export const getServiceListAction = async (subCategoryId: string) => {
@@ -32,8 +32,5 @@ export const getServiceDetailsById = async (serviceId: string) => {
   const serviceDetails = ResponseSchema<Service>(ServiceSchema).parse(
     await response.json()
   );
-
-  console.log({ serviceDetails });
-
   return serviceDetails;
 };
