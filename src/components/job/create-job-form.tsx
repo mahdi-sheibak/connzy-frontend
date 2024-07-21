@@ -8,8 +8,6 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { StepField } from "@/components/job/step-field";
 import { Form } from "@/components/ui/form";
-import { DevTool } from "@hookform/devtools";
-// import { useMutation } from "@tanstack/react-query";
 
 const formSchema = z.record(
   z.string(),
@@ -54,11 +52,6 @@ const getZodSchema = (steps: Service["steps"]) => {
     baseSchema = baseSchema.extend({
       [step?._id]: s,
     });
-
-    //
-    // baseSchema = baseSchema.extend({
-    //   [step?._id]: z.string().min(3).max(30),
-    // });
   });
 
   return baseSchema;
@@ -99,26 +92,18 @@ export function CreateJobForm({ steps, serviceId, reset }: Readonly<Props>) {
     resolver: zodResolver(formZSchema),
   });
 
-  // const createJobMutation = useMutation({
-  //   mutationKey: ["create-job"],
-  //   mutationFn: (data: any) => {
-  //     return fetch(,{})
-  //   }
-  // })
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const jobPayload = {
       job: {
         serviceId: serviceId,
         stepResponses: values,
-        description: "Looking for a piano teacher for my beginner child",
       },
     };
+
     console.log({ jobPayload });
 
     reset();
     form.reset();
-    form.clearErrors();
   };
 
   return (
@@ -138,7 +123,6 @@ export function CreateJobForm({ steps, serviceId, reset }: Readonly<Props>) {
               </Step>
             );
           })}
-          <DevTool control={form.control} />
           <StepperFooter
             isSubmitting={form.formState.isSubmitting}
             steps={steps}

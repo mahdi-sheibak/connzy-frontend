@@ -3,7 +3,6 @@ import { ChooseService } from "@/components/choose-service/choose-service";
 import { Button } from "@/components/ui/button";
 import { config } from "@/config";
 import { ResponseSchema, type Service, ServiceSchema } from "@/schema";
-import React, { useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CreateJobForm } from "@/components/job/create-job-form";
 import { Loader2Icon } from "lucide-react";
@@ -20,13 +19,6 @@ export function CreateJob() {
       return serviceDetails;
     },
   });
-
-  console.log({ value: serviceDetailsMutation.data });
-
-  // TODO: remove this
-  useEffect(() => {
-    serviceDetailsMutation.mutate("6697af5dfd5be4caeeee9bed");
-  }, []);
 
   return (
     <div>
