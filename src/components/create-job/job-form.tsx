@@ -5,7 +5,6 @@ import { Steps } from "@/schema";
 import { Form } from "@/components/ui/form";
 import { zodSchemaBuilder } from "@/lib/zod-schema-builder";
 import { JobStepper } from "@/components/create-job/job-stepper";
-import { DevTool } from "@hookform/devtools";
 import { useMutation } from "@tanstack/react-query";
 import { config } from "@/config";
 
@@ -76,7 +75,6 @@ export function JobForm({ steps, serviceId, reset }: Readonly<Props>) {
 
   return (
     <Form {...form}>
-      <DevTool control={form.control} />
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <JobStepper steps={steps} />
       </form>
