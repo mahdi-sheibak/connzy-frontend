@@ -50,6 +50,8 @@ export const ServiceStepSchema = z.object({
 
 export const StepsSchema = z.array(z.array(ServiceStepSchema)).optional();
 
+export type Steps = z.infer<typeof StepsSchema>;
+
 export const ServiceSchema = z.object({
   name: z.string(),
   _id: z.string(),

@@ -405,6 +405,7 @@ interface StepInternalConfig {
 interface FullStepProps extends StepProps, StepInternalConfig {}
 
 const Step = React.forwardRef<HTMLLIElement, StepProps>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (props, ref: React.Ref<any>) => {
     const {
       children,
@@ -806,6 +807,7 @@ const StepButtonContainer = ({
 
 // <---------- STEP ICON ---------->
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type IconType = LucideIcon | React.ComponentType<any> | undefined;
 
 const iconVariants = cva("", {

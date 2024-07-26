@@ -44,7 +44,8 @@ export function SelectProvince({
       return serviceList.data.length
         ? serviceList.data.map((serviceOption) => ({
             label: serviceOption.name,
-            value: serviceOption._id,
+            value: serviceOption.name,
+            // value: serviceOption._id,
           }))
         : [];
     },

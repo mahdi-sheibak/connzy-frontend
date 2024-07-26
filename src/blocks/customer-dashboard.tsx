@@ -1,5 +1,5 @@
 "use client";
-import { CreateJob } from "@/components/job/create-job";
+import { CreateJob } from "@/components/create-job/create-job";
 
 export function CustomerDashboard() {
   return (

@@ -21,7 +21,7 @@ type CitySearch = z.infer<typeof CitySearchSchema>;
 
 interface Props {
   placeholder: string;
-  onChange?: (value: string) => void;
+  onChange?: (option: string) => void;
   value: string;
 }
 
@@ -38,7 +38,8 @@ export function SelectCity({ onChange, placeholder, value }: Readonly<Props>) {
       return serviceList.data.length
         ? serviceList.data.map((serviceOption) => ({
             label: serviceOption.name,
-            value: serviceOption._id,
+            value: serviceOption.name,
+            // value: serviceOption._id,
           }))
         : [];
     },

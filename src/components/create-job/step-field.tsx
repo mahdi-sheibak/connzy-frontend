@@ -21,7 +21,7 @@ interface Props {
   step: z.infer<typeof ServiceStepSchema>;
 }
 
-export function StepField({ step }: Readonly<Props>) {
+export function JobStepField({ step }: Readonly<Props>) {
   const form = useFormContext();
 
   const renderField = () => {
